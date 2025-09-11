@@ -1,6 +1,6 @@
 # Options Greeks & Delta-Hedge Engine — Python (BSM)
 
-Minimal, resume-ready project for pricing European options (Black–Scholes–Merton), computing Greeks, and demonstrating a rolling delta hedge. Ships with CSV outputs and a tiny CLI.
+ Project for pricing European options (Black–Scholes–Merton), computing Greeks, and demonstrating a rolling delta hedge. Ships with CSV outputs and a tiny CLI.
 
 > **Use-cases**
 > - Generate moneyness × tenor **Delta heatmaps** for hedge sizing
