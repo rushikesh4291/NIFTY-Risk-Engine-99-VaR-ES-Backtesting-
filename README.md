@@ -43,4 +43,5 @@ docs/
 - Educational sample — not investment advice. Extend with transaction costs, slippage, discrete hedging errors, and real data feeds before making claims.
 - Vega is returned per absolute vol point (1.00 = 100 vol points). Convert as needed.
 - Theta is annualized; divide by 365 for calendar-day theta if you prefer.
-- MIT License.
+- Feel free to use all resources ! we encourage to share Knowledge ! 
+- 
