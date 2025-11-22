@@ -1,5 +1,5 @@
 import argparse, os
-from .tasks import delta_heatmap, scenario_table, delta_hedge_example
+from .tasks import delta_heatmap, plot_heatmap, scenario_table, delta_hedge_example
 
 def main():
     p = argparse.ArgumentParser(prog="greeks-engine", description="Options Greeks & Delta-Hedge Engine — Python (BSM)")
@@ -17,6 +17,8 @@ def main():
     hp.add_argument("--t-end", type=float, default=1.0)
     hp.add_argument("--t-steps", type=int, default=10)
     hp.add_argument("--out", type=str, default="outputs/delta_heatmap.csv")
+    hp.add_argument("--png", type=str, default="outputs/delta_heatmap.png")
+    hp.add_argument("--cmap", type=str, default="viridis")
 
     sp = sub.add_parser("scenarios", help="Generate scenario table (±vol, ±rate) at ATM")
     sp.add_argument("--S", type=float, default=20000.0)
@@ -36,6 +38,9 @@ def main():
     dp.add_argument("--q", type=float, default=0.01)
     dp.add_argument("--sigma", type=float, default=0.20)
     dp.add_argument("--seed", type=int, default=42)
+    dp.add_argument("--data-path", type=str, default=None, help="CSV path with Date/Close for NIFTY")
+    dp.add_argument("--price-col", type=str, default="Close")
+    dp.add_argument("--date-col", type=str, default="Date")
     dp.add_argument("--out", type=str, default="outputs/delta_hedge_example.csv")
 
     args = p.parse_args()
@@ -46,7 +51,9 @@ def main():
                            t_start=args.t_start, t_end=args.t_end, t_steps=args.t_steps)
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
         df.to_csv(args.out)
-        print(f"Wrote {args.out}")
+        os.makedirs(os.path.dirname(args.png), exist_ok=True)
+        plot_heatmap(df, args.png, cmap=args.cmap)
+        print(f"Wrote {args.out} and {args.png}")
     elif args.cmd == "scenarios":
         df = scenario_table(S0=args.S, K_atm=args.K, T=args.T, q=args.q,
                             sigmas=tuple(args.sigmas), rates=tuple(args.rates))
@@ -54,7 +61,8 @@ def main():
         df.to_csv(args.out, index=False)
         print(f"Wrote {args.out}")
     elif args.cmd == "hedge":
-        df = delta_hedge_example(days=args.days, S0=args.S, K_atm=args.K, T=args.T, r=args.r, q=args.q, sigma=args.sigma, seed=args.seed)
+        df = delta_hedge_example(days=args.days, S0=args.S, K_atm=args.K, T=args.T, r=args.r, q=args.q, sigma=args.sigma, seed=args.seed,
+                                 data_path=args.data_path, price_column=args.price_col, date_column=args.date_col)
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
         df.to_csv(args.out, index=False)
         print(f"Wrote {args.out}")

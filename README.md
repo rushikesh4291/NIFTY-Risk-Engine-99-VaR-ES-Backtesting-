@@ -15,16 +15,19 @@ python -m venv .venv && source .venv/bin/activate    # (Windows: .venv\Scripts\a
 pip install -r requirements.txt
 
 # 1) Heatmap
-python -m greeks_engine.cli heatmap --S 20000 --sigma 0.20 --r 0.06 --q 0.01 --out outputs/delta_heatmap.csv
+python -m greeks_engine.cli heatmap --S 20000 --sigma 0.20 --r 0.06 --q 0.01 --out outputs/delta_heatmap.csv --png outputs/delta_heatmap.png
 
 # 2) Scenario table at ATM
 python -m greeks_engine.cli scenarios --S 20000 --K 20000 --T 0.25 --out outputs/scenario_table.csv
 
-# 3) Rolling delta hedge (toy)
-python -m greeks_engine.cli hedge --days 60 --S 20000 --K 20000 --sigma 0.20 --out outputs/delta_hedge_example.csv
+# 3) Rolling delta hedge with real NIFTY closes
+# (csv needs Date and Close columns)
+python -m greeks_engine.cli hedge --data-path data/nifty_2020_mar_apr.csv --out outputs/delta_hedge_example.csv
 ```
 
-Outputs land in `outputs/` as CSV.
+Outputs land in `outputs/` as CSV plus a `delta_heatmap.png` visualization.
+
+The repo ships `data/nifty_2020_mar_apr.csv`, a March–April 2020 NIFTY50 close series, so the hedge path and tests can run on actual market data without further downloads.
 
 ## Repo layout
 
@@ -37,6 +40,11 @@ outputs/                 # sample CSVs (generated or prefilled)
 data/                    # (optional) put real price paths here
 docs/
   greeks_decisions_brief.md  # one-page "Greeks → Decisions" brief
+```
+
+## Tests
+```
+pytest
 ```
 
 ## Notes & disclaimers
