@@ -1,60 +1,36 @@
-# Options Greeks & Delta-Hedge Engine — Python (BSM)
+# NIFTY Market Mood Indicator 📈
 
- Project for pricing European options (Black–Scholes–Merton), computing Greeks, and demonstrating a rolling delta hedge. Ships with CSV outputs and a tiny CLI.
+An automated, data-driven pipeline designed to calculate a daily **Market Mood Score (0-100)** for the NIFTY 50 index. 
 
-> **Use-cases**
-> - Generate moneyness × tenor **Delta heatmaps** (CSV + PNG) for hedge sizing
-> - Create **scenario tables** (±σ, ±r) with price + Greeks
-> - Run a **toy rolling delta-hedge** path to explain P&L attribution
+This project synthesizes institutional cash flows and key technical indicators to provide actionable quantitative insights. It features a rule-based evaluation engine and outputs clean, structured data ready for integration with business intelligence tools like Power BI and Google Sheets.
 
-## Quickstart
+## 🚀 Key Features
 
-```bash
-python -V        # 3.10+ recommended
-python -m venv .venv && source .venv/bin/activate    # (Windows: .venv\Scripts\activate)
-pip install -r requirements.txt
+* **Data Ingestion:** Automated extraction of OHLCV data for NIFTY & BANKNIFTY via `yfinance`, combined with FII/DII net cash flow data.
+* **Quantitative Analysis:** Computes critical technical indicators including **RSI(14)**, **Anchored VWAP** (Monthly & Weekly), and **20-Day Volume Z-Scores**.
+* **Statistical Tracking:** Monitors the 20-day rolling correlation between NIFTY and BANKNIFTY to gauge broader market participation.
+* **Algorithmic Scoring Engine:** Utilizes a customizable, rule-based alerts system to generate a weighted daily market mood score.
+* **BI Integration:** Exports processed metrics to a streamlined CSV format (`out/daily_dashboard.csv`) optimized for seamless dashboard visualization.
 
-# 1) Heatmap (CSV + PNG)
-python -m greeks_engine.cli heatmap --S 20000 --sigma 0.20 --r 0.06 --q 0.01 --out outputs/delta_heatmap.csv --png-out outputs/delta_heatmap.png
+## 🛠️ Technical Stack
+* **Language:** Python
+* **Libraries:** `yfinance`, `pandas`, `numpy`
+* **Configuration:** YAML (Rule Engine)
+* **Visualization:** Power BI / Google Sheets
 
-# 2) Scenario table at ATM
-python -m greeks_engine.cli scenarios --S 20000 --K 20000 --T 0.25 --out outputs/scenario_table.csv
+## 📂 Project Structure
 
-# 3) Rolling delta hedge (toy, simulated path)
-python -m greeks_engine.cli hedge --days 60 --S 20000 --K 20000 --sigma 0.20 --out outputs/delta_hedge_example.csv
-
-# 4) Rolling delta hedge (real NIFTY closes)
-#    Put your price history CSV in data/nifty_spot.csv with columns: Date, Close
-python -m greeks_engine.cli hedge --data data/nifty_spot.csv --K 20000 --T 0.25 --sigma 0.20 --out outputs/delta_hedge_nifty.csv
-```
-
-Outputs land in `outputs/` as CSV, and heatmaps also render to PNG.
-
-## Repo layout
-
-```
-greeks_engine/           # package
-  bsm.py                 # BSM price + Greeks (closed-form)
-  tasks.py               # heatmap, scenarios, delta-hedge (simulated + real data), plotting
-  cli.py                 # argparse CLI entrypoints (CSV + PNG writers)
-outputs/                 # sample CSVs (generated or prefilled)
-data/                    # (optional) put real price paths here
-docs/
-  greeks_decisions_brief.md  # one-page "Greeks → Decisions" brief
-```
-
-## Testing
-
-Run the automated checks locally before shipping changes:
-
-```bash
-python -m pip install -r requirements.txt
-pytest
-```
-
-## Notes & disclaimers
-- Educational sample — not investment advice. Extend with transaction costs, slippage, discrete hedging errors, and real data feeds before making claims.
-- Vega is returned per absolute vol point (1.00 = 100 vol points). Convert as needed.
-- Theta is annualized; divide by 365 for calendar-day theta if you prefer.
-- Feel free to use all resources ! we encourage to share Knowledge ! 
-- 
+```text
+├── data/
+│   └── fii_dii_sample.csv       # Institutional net flows (INR crore)
+├── src/
+│   ├── etl.py                   # Data extraction, transformation, and merging
+│   ├── indicators.py            # Logic for RSI, VWAP, rolling stats, and correlations
+│   ├── alerts.py                # Rule engine for boolean triggers and score weighting
+│   └── mood_score.py            # Main pipeline entry point
+├── docs/
+│   └── method_note.md           # Documentation on scoring methodology and logic
+├── dashboards/
+│   └── powerbi_model_spec.md    # Schema and relationships for BI integration
+├── rules.yaml                   # Configurable thresholds and weights for the mood score
+└── requirements.txt             # Project dependencies
